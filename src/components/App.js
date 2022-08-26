@@ -1,5 +1,6 @@
 import Breadcrumb from './Breadcrumb.js';
 import Nodes from './Nodes.js';
+import ImageView from './ImageView.js';
 
 import { request } from '../api/index.js';
 
@@ -8,6 +9,7 @@ export default function App({ $target }) {
     isRoot: false,
     nodes: [],
     depth: [],
+    selectedFilePath: null,
   };
 
   this.setState = (nextState) => {
@@ -41,14 +43,14 @@ export default function App({ $target }) {
 
   const nodes = new Nodes({
     $target,
-    initialState: { isRoot: this.state.isRoot, nodes: this.state.nodes },
+    initialState: [],
     onClick: async (node) => {
       try {
         if (node.type === 'DIRECTORY') {
           const nextNodes = await request(node.id);
           this.setState({
             ...this.state,
-            deapth: [...this.state.depth, node],
+            depth: [...this.state.depth, node],
             nodes: nextNodes,
           });
         } else if (node.type === 'FILE') {
@@ -57,5 +59,10 @@ export default function App({ $target }) {
         alert(`${errror}, 요청 실패`);
       }
     },
+  });
+
+  const imageView = new ImageView({
+    $target,
+    initialState: this.state.selectedNodeImage,
   });
 }
